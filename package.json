@@ -1,0 +1,48 @@
+{
+  "name": "apollo-express-graphql",
+  "version": "1.0.0",
+  "scripts": {
+    "watch": "tsc -w",
+    "dev": "nodemon dist/index.js",
+    "start": "node dist/index.js",
+    "dev2": "nodemon --exec ts-node src/index.ts",
+    "start2": "ts-node src/index.ts"
+  },
+  "keywords": [],
+  "author": "pydjangodev@outlook.com",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/connect-redis": "^0.0.18",
+    "@types/express": "^4.17.13",
+    "@types/express-session": "1.17.0",
+    "@types/ioredis": "^4.28.8",
+    "@types/node": "^17.0.21",
+    "@types/nodemailer": "^6.4.4",
+    "@types/uuid": "^8.3.4",
+    "class-validator": "^0.13.2",
+    "nodemon": "^2.0.15",
+    "ts-node": "^10.5.0",
+    "typescript": "^4.6.2"
+  },
+  "dependencies": {
+    "apollo-server-core": "^3.6.3",
+    "apollo-server-express": "^3.6.3",
+    "argon2": "^0.28.5",
+    "connect-redis": "^6.1.1",
+    "cors": "^2.8.5",
+    "express": "^4.17.3",
+    "express-session": "^1.17.2",
+    "graphql": "^15.5.0",
+    "ioredis": "^4.28.5",
+    "nodemailer": "^6.7.2",
+    "pg": "^8.7.3",
+    "reflect-metadata": "^0.1.13",
+    "type-graphql": "^1.2.0-rc.1",
+    "typeorm": "^0.2.45",
+    "uuid": "^8.3.2"
+  },
+  "peerDependencies": {
+    "graphql-query-complexity": "^0.11.0",
+    "graphql-subscriptions": "^2.0.0"
+  }
+}
