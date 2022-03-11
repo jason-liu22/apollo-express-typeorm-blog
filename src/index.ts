@@ -61,6 +61,7 @@ const main = async () => {
     }),
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
+      // If you want to work with the GraphQL landing page instead of Apollo Studio, please comment out the following line.
       // ApolloServerPluginLandingPageGraphQLPlayground(),
     ],
     context: ({ req, res }) => ({ req, res, redis }),
