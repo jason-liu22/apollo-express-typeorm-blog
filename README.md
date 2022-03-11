@@ -44,4 +44,4 @@ pnpm dev
 And open the web browser, go to the http://localhost:4000/graphql
 If everything is okay, you have to see the same image below.
 
-![Apollo Studio](./_images/apollo-studio.png "AnVIL Portal Image!")
+![Apollo Studio](./_images/apollo-studio.png "Apollo Studio Image!")
