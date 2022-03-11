@@ -45,3 +45,5 @@ And open the web browser, go to the http://localhost:4000/graphql
 If everything is okay, you have to see the same image below.
 
 ![Apollo Studio](./_images/apollo-studio.png "Apollo Studio Image!")
+
+You can see the frontend at [Blog project using Nextjs, Apollo graphql](https://github.com/pyDjangoDev/Nextjs-Apollo-Tailwind-Boilerplate)
