@@ -30,7 +30,7 @@ export class PostResolver {
     const qb = getConnection()
       .getRepository(Post)
       .createQueryBuilder("post")
-      .innerJoinAndSelect("post.creator", "user", "user.id = post.creatorId")
+      .innerJoinAndSelect("post.author", "user", "user.id = post.authorId")
       .orderBy("post.createdAt", "DESC")
       // .orderBy('post."createdAt"', "DESC")
       .take(postsLimit + 1);
@@ -47,14 +47,17 @@ export class PostResolver {
   }
 
   @FieldResolver(() => String)
-  subText(@Root() post: Post) {
-    return post.text.slice(0, 50);
+  body(@Root() post: Post, @Ctx() { req }: MyContext) {
+    if (!req.session.userId) {
+      return "";
+    }
+    return post.body;
   }
 
   // @FieldResolver(() => User)
-  // async creator(@Root() post: Post) {
-  //   // return userLoader.load(post.creatorId);
-  //   const user = await User.findOne({ id: post.creatorId });
+  // async author(@Root() post: Post) {
+  //   // return userLoader.load(post.authorId);
+  //   const user = await User.findOne({ id: post.authorId });
   //   return user;
   // }
 
@@ -82,7 +85,7 @@ export class PostResolver {
     // const user = await User.findOne({ id: parseInt(req.session.userId) });
     const post = await Post.create({
       ...input,
-      creatorId: req.session.userId,
+      authorId: req.session.userId,
     }).save();
     return { post };
   }

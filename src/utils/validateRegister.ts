@@ -1,8 +1,8 @@
 import { FieldError } from "src/resolvers/FieldError";
-import { UsernamePasswordInput } from "src/resolvers/UsernamePasswordInput";
+import { RegisterInput } from "src/resolvers/RegisterInput";
 
 export const validateRegister = (
-  options: UsernamePasswordInput
+  options: RegisterInput
 ): [FieldError] | null => {
   if (!options.email.includes("@")) {
     return [

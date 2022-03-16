@@ -21,9 +21,17 @@ export default class Post extends BaseEntity {
   @Column()
   title!: string;
 
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  description: string;
+
   @Field()
-  @Column()
-  text!: string;
+  @Column({ nullable: true })
+  cover: string;
+
+  @Field()
+  @Column({ type: "text", default: "" })
+  body: string;
 
   @Field()
   @Column({ type: "int", default: 0 })
@@ -31,11 +39,11 @@ export default class Post extends BaseEntity {
 
   @Field()
   @Column()
-  creatorId: number;
+  authorId: number;
 
   @Field(() => User)
   @ManyToOne(() => User, (user) => user.posts)
-  creator: User;
+  author: User;
 
   @Field(() => String)
   @CreateDateColumn()

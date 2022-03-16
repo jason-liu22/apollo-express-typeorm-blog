@@ -9,13 +9,18 @@ import {
 } from "type-graphql";
 import argon2 from "argon2";
 import { v4 as uuidV4 } from "uuid";
+import { createWriteStream } from "fs";
+import path from "path";
+import { finished } from "stream/promises";
+import { FileUpload, GraphQLUpload } from "graphql-upload";
 import User from "../entities/User";
 import { MyContext } from "../types";
 import { COOKIE_NAME, FORGOT_PASSWORD_PREFIX } from "../constants";
 import { UserResponse } from "./UserResponse";
-import { UsernamePasswordInput } from "./UsernamePasswordInput";
+import { RegisterInput } from "./RegisterInput";
 import { validateRegister } from "../utils/validateRegister";
 import { sendEmail } from "../utils/sendEmail";
+import { createRandomFilename } from "../utils/createRandomFilename";
 
 @Resolver(User)
 export class UserResolver {
@@ -27,15 +32,35 @@ export class UserResolver {
     return "";
   }
 
+  @FieldResolver(() => String)
+  avatarUrl(@Root() user: User) {
+    if (user.avatarUrl) {
+      return `http://localhost:4000/images/user/${user.avatarUrl}`;
+    }
+    return "";
+  }
+
   @Mutation(() => UserResponse)
   async register(
-    @Arg("options", () => UsernamePasswordInput) options: UsernamePasswordInput,
+    @Arg("options", () => RegisterInput) options: RegisterInput,
+    @Arg("avatar", () => GraphQLUpload)
+    { createReadStream, filename }: FileUpload,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
+    const stream = createReadStream();
+    const { ext } = path.parse(filename);
+    const randomFilename = createRandomFilename() + ext;
+    const out = createWriteStream(
+      path.join(__dirname, "../../images/user", randomFilename)
+    );
+    await stream.pipe(out);
+    await finished(out);
+
     const errors = validateRegister(options);
     if (errors) {
       return { errors };
     }
+
     const hashedPassword = await argon2.hash(options.password);
     let user;
     try {
@@ -43,6 +68,7 @@ export class UserResolver {
         username: options.username,
         email: options.email,
         password: hashedPassword,
+        avatarUrl: randomFilename,
       }).save();
       req.session!.userId = user.id;
     } catch (err) {

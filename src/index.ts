@@ -5,16 +5,18 @@ import {
   ApolloServerPluginDrainHttpServer,
   // ApolloServerPluginLandingPageGraphQLPlayground,
 } from "apollo-server-core";
+import { graphqlUploadExpress } from "graphql-upload";
 import express from "express";
 import http from "http";
 import { buildSchema } from "type-graphql";
 import session from "express-session";
 import Redis from "ioredis";
 import { createConnection } from "typeorm";
+import path from "path";
+import { existsSync, mkdirSync } from "fs";
 import { COOKIE_NAME, __prod__ } from "./constants";
 import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
-// import Post from "./entities/Post";
 
 const main = async () => {
   await createConnection();
@@ -25,15 +27,14 @@ const main = async () => {
   const RedisStore = require("connect-redis")(session);
   const redis = new Redis();
 
+  app.use(graphqlUploadExpress());
   app.set("trust proxy", !__prod__);
-
   app.use(
     cors({
       origin: ["https://studio.apollographql.com", "http://localhost:3000"],
       credentials: true,
     })
   );
-
   app.use(
     session({
       name: COOKIE_NAME,
@@ -53,6 +54,16 @@ const main = async () => {
       resave: false,
     })
   );
+  app.use("/images", express.static(path.join(__dirname, "../images")));
+
+  existsSync(path.join(__dirname, "../images")) ||
+    mkdirSync(path.join(__dirname, "../images"));
+
+  existsSync(path.join(__dirname, "../images/user")) ||
+    mkdirSync(path.join(__dirname, "../images/user"));
+
+  existsSync(path.join(__dirname, "../images/post")) ||
+    mkdirSync(path.join(__dirname, "../images/post"));
 
   const apolloSever = new ApolloServer({
     schema: await buildSchema({

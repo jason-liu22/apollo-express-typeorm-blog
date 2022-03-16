@@ -25,10 +25,14 @@ export default class User extends BaseEntity {
   @Column({ unique: true })
   email!: string;
 
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  avatarUrl: string;
+
   @Column({ type: "text" })
   password!: string;
 
-  @OneToMany(() => Post, (post) => post.creator)
+  @OneToMany(() => Post, (post) => post.author)
   posts: Post[];
 
   @Field(() => String)
