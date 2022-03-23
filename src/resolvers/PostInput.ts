@@ -6,5 +6,8 @@ export class PostInput {
   title!: string;
 
   @Field()
-  text!: string;
+  description!: string;
+
+  @Field()
+  body!: string;
 }

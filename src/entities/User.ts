@@ -25,8 +25,8 @@ export default class User extends BaseEntity {
   @Column({ unique: true })
   email!: string;
 
-  @Field({ nullable: true })
-  @Column({ nullable: true })
+  @Field()
+  @Column("text", { default: "" })
   avatarUrl: string;
 
   @Column({ type: "text" })
@@ -35,11 +35,11 @@ export default class User extends BaseEntity {
   @OneToMany(() => Post, (post) => post.author)
   posts: Post[];
 
-  @Field(() => String)
+  @Field(() => Number)
   @CreateDateColumn()
   createdAt: Date;
 
-  @Field(() => String)
+  @Field(() => Number)
   @UpdateDateColumn()
   updatedAt: Date;
 }

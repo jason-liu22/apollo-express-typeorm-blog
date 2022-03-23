@@ -10,33 +10,38 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { getConnection } from "typeorm";
-// import User from "../entities/User";
+import { FileUpload, GraphQLUpload } from "graphql-upload";
+import path from "path";
+import { createWriteStream } from "fs";
+import { finished } from "stream/promises";
+import User from "../entities/User";
 import Post from "../entities/Post";
 import { MyContext } from "../types";
 import { PostInput } from "./PostInput";
 import { isAuth } from "../middlewares/isAuth";
 import { PostResponse } from "./PostResponse";
 import { PaginatedPosts } from "./PaginatedPosts";
+import { createRandomFilename } from "../utils/createRandomFilename";
+import { validateCreatePost } from "../utils/validateCreatePost";
 
 @Resolver(Post)
 export class PostResolver {
   @Query(() => PaginatedPosts)
   async posts(
     @Arg("limit", () => Int) limit: number,
-    @Arg("cursor", () => String, { nullable: true }) cursor: string | null,
+    @Arg("cursor", () => Number, { nullable: true }) cursor: number | null,
     @Ctx() {}: MyContext
   ): Promise<PaginatedPosts> {
     const postsLimit = Math.min(20, limit);
     const qb = getConnection()
       .getRepository(Post)
       .createQueryBuilder("post")
-      .innerJoinAndSelect("post.author", "user", "user.id = post.authorId")
+      // .innerJoinAndSelect("post.author", "user", "user.id = post.authorId")
       .orderBy("post.createdAt", "DESC")
-      // .orderBy('post."createdAt"', "DESC")
       .take(postsLimit + 1);
     if (cursor) {
       qb.where("post.createdAt < :cursor", {
-        cursor: new Date(parseInt(cursor)),
+        cursor: new Date(cursor),
       });
     }
     const posts = await qb.getMany();
@@ -54,37 +59,49 @@ export class PostResolver {
     return post.body;
   }
 
-  // @FieldResolver(() => User)
-  // async author(@Root() post: Post) {
-  //   // return userLoader.load(post.authorId);
-  //   const user = await User.findOne({ id: post.authorId });
-  //   return user;
-  // }
+  @FieldResolver(() => String)
+  cover(@Root() post: Post) {
+    if (post.cover) {
+      return `http://localhost:4000/images/post/cover/${post.cover}`;
+    }
+    return "";
+  }
+
+  @FieldResolver(() => User)
+  author(@Root() post: Post, @Ctx() { userLoader }: MyContext) {
+    return userLoader.load(post.authorId);
+  }
 
   @Query(() => Post, { nullable: true })
   post(@Arg("id", () => Int) id: number): Promise<Post | undefined> {
-    return Post.findOne({ where: { id } });
+    return Post.findOne(id);
   }
 
   @Mutation(() => PostResponse)
   @UseMiddleware(isAuth)
   async createPost(
     @Arg("input") input: PostInput,
+    @Arg("cover", () => GraphQLUpload)
+    { createReadStream, filename }: FileUpload,
     @Ctx() { req }: MyContext
   ): Promise<PostResponse> {
-    if (!input.title) {
-      return {
-        errors: [{ field: "title", message: "Title is required." }],
-      };
+    const errors = validateCreatePost(input);
+    if (errors) {
+      return { errors };
     }
-    if (!input.text) {
-      return {
-        errors: [{ field: "text", message: "Text is required." }],
-      };
-    }
-    // const user = await User.findOne({ id: parseInt(req.session.userId) });
+
+    const stream = createReadStream();
+    const { ext } = path.parse(filename);
+    const randomFilename = createRandomFilename() + ext;
+    const out = createWriteStream(
+      path.join(__dirname, "../../images/post/cover", randomFilename)
+    );
+    await stream.pipe(out);
+    await finished(out);
+
     const post = await Post.create({
       ...input,
+      cover: randomFilename,
       authorId: req.session.userId,
     }).save();
     return { post };

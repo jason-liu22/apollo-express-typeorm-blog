@@ -17,6 +17,7 @@ import { existsSync, mkdirSync } from "fs";
 import { COOKIE_NAME, __prod__ } from "./constants";
 import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
+import { createUserLoader } from "./utils/createUserLoader";
 
 const main = async () => {
   await createConnection();
@@ -75,7 +76,12 @@ const main = async () => {
       // If you want to work with the GraphQL landing page instead of Apollo Studio, please comment out the following line.
       // ApolloServerPluginLandingPageGraphQLPlayground(),
     ],
-    context: ({ req, res }) => ({ req, res, redis }),
+    context: ({ req, res }) => ({
+      req,
+      res,
+      redis,
+      userLoader: createUserLoader(),
+    }),
   });
 
   await apolloSever.start();

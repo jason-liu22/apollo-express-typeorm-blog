@@ -15,6 +15,7 @@ specifiers:
   class-validator: ^0.13.2
   connect-redis: ^6.1.1
   cors: ^2.8.5
+  dataloader: ^2.0.0
   express: ^4.17.3
   express-session: ^1.17.2
   graphql: ^15.5.0
@@ -36,6 +37,7 @@ dependencies:
   argon2: 0.28.5
   connect-redis: 6.1.1
   cors: 2.8.5
+  dataloader: 2.0.0
   express: 4.17.3
   express-session: 1.17.2
   graphql: 15.8.0
@@ -923,6 +925,10 @@ packages:
 
   /cssfilter/0.0.10:
     resolution: {integrity: sha1-xtJnJjKi5cg+AT5oZKQs6N79IK4=}
+    dev: false
+
+  /dataloader/2.0.0:
+    resolution: {integrity: sha512-YzhyDAwA4TaQIhM5go+vCLmU0UikghC/t9DTQYZR2M/UvZ1MdOhPezSDZcjj9uqQJOMqjLcpWtyW2iNINdlatQ==}
     dev: false
 
   /debug/2.6.9:

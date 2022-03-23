@@ -21,16 +21,16 @@ export default class Post extends BaseEntity {
   @Column()
   title!: string;
 
-  @Field({ nullable: true })
-  @Column({ nullable: true })
+  @Field()
+  @Column()
   description: string;
 
   @Field()
-  @Column({ nullable: true })
+  @Column()
   cover: string;
 
   @Field()
-  @Column({ type: "text", default: "" })
+  @Column({ type: "text" })
   body: string;
 
   @Field()
@@ -45,11 +45,11 @@ export default class Post extends BaseEntity {
   @ManyToOne(() => User, (user) => user.posts)
   author: User;
 
-  @Field(() => String)
+  @Field(() => Number)
   @CreateDateColumn()
   createdAt: Date;
 
-  @Field(() => String)
+  @Field(() => Number)
   @UpdateDateColumn()
   updatedAt: Date;
 }
